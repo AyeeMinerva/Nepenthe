@@ -1,0 +1,21 @@
+# 加密所有 .secret 后缀的文件（递归所有目录）
+**/*.secret filter=git-crypt diff=git-crypt
+
+# 加密所有 .key 后缀的文件（递归所有目录）
+**/*.key filter=git-crypt diff=git-crypt
+
+# 加密所有以 SECRET_ 开头的文件（递归所有目录）
+**/SECRET_* filter=git-crypt diff=git-crypt
+
+# 加密所有 SECRETS 文件夹及其所有内容（递归所有目录）
+**/SECRETS/** filter=git-crypt diff=git-crypt
+
+# 加密所有 SECRET 文件夹及其所有内容（递归所有目录）
+**/SECRET/** filter=git-crypt diff=git-crypt
+
+# 统一所有文本文件为 LF 换行符（推荐跨平台开发）
+* text=auto eol=lf
+
+# 针对 Unity 项目常见文件类型（如 .cs 和 .meta），强制 LF
+*.cs text eol=lf
+*.meta text eol=lf

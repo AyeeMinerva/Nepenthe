@@ -1,0 +1,20 @@
+# secrets 文件夹及其所有内容（递归所有目录）
+**/secrets/** filter=git-crypt diff=git-crypt
+**/SECRETS/** filter=git-crypt diff=git-crypt
+
+# history 文件夹及其所有内容（递归所有目录）
+**/history/** filter=git-crypt diff=git-crypt
+
+# 以 SECRETS_ 或 SECRET_ 开头的文件（递归所有目录）
+**/SECRETS_* filter=git-crypt diff=git-crypt
+**/SECRET_* filter=git-crypt diff=git-crypt
+
+# .secret 和 .key 后缀的文件（递归所有目录）
+**/*.secret filter=git-crypt diff=git-crypt
+**/*.key filter=git-crypt diff=git-crypt
+
+# .secrets 文件（递归所有目录）
+**/.secrets filter=git-crypt diff=git-crypt
+
+# user_settings.json 文件（递归所有目录）
+**/user_settings.json filter=git-crypt diff=git-crypt

@@ -1,0 +1,44 @@
+```
+xml
+<
+live2d_emotion>playful</live2d_emotion>
+<tts>
+你好！你好你好！ 看来你今天的心情很不错呢！要
+不要来玩个游戏？</tts>
+```
+你好… (叹气) 你好。 如果你只是想一直说“你好”，那… 我也只能一直回复“你好”了。这样有意义吗？好吧， 你好。  如果没什么别的事情，我就先去忙了哦？--- Received at 2025-05-12 12:41:52 ---
+{"chunk": "\u4f60\u597d"}
+---
+
+--- Received at 2025-05-12 12:41:54 ---
+{"chunk": "\uff01\u6709\u4ec0\u4e48\u6211\u53ef\u4ee5"}
+---
+
+--- Received at 2025-05-12 12:41:56 ---
+{"chunk": "\u5e2e\u52a9\u4f60\u7684\u5417\uff1f\n"}
+---
+
+--- Received at 2025-05-12 12:41:58 ---
+{"chunk": ""}
+---
+
+--- Received at 2025-05-12 12:43:53 ---
+{"chunk": "\u9c7c"}
+---
+
+--- Received at 2025-05-12 12:43:55 ---
+{"chunk": "\u8bf4\uff1a\u201c\u6211\u65f6\u65f6\u523b\u523b\u7741\u5f00\u773c\u775b\uff0c\u5c31\u662f\u4e3a\u4e86\u80fd\u770b\u89c1\u4f60\u3002\u201d\n"}
+---
+
+--- Received at 2025-05-12 12:43:57 ---
+{"chunk": "\u6c34\u8bf4\uff1a\u201c\u6211\u65f6\u65f6\u523b\u523b\u5c06\u4f60\u62e5\u62b1\uff0c\u5c31\u662f\u4e3a\u4e86\u4e0d\u8ba9\u4f60\u79bb\u5f00\u6211"}
+---
+
+--- Received at 2025-05-12 12:43:59 ---
+{"chunk": "\u3002\u201d\n"}
+---
+
+--- Received at 2025-05-12 12:44:01 ---
+{"chunk": ""}
+---
+
