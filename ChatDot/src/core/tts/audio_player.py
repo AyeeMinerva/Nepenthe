@@ -8,7 +8,7 @@ import numpy as np
 from global_managers.logger_manager import LoggerManager
 
 # 全局输出设备索引
-AUDIO_OUTPUT_DEVICE_INDEX = 8
+AUDIO_OUTPUT_DEVICE_INDEX = 6
 
 class AudioPlayer:
     _instance = None
