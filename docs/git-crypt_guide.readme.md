@@ -17,7 +17,7 @@ git-crypt export-key gitcrypt.key
 ```
 协作者收到 gitcrypt.key 后，导入：
 ```
-git-crypt import-key gitcrypt.key
+git-crypt unlock gitcrypt.key
 ```
 之后协作者拉代码时自动解密，无需额外操作。
 
