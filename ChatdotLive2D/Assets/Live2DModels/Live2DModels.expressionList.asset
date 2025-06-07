@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f401bb1c5c52514eba33c0c2ffdc8ff, type: 3}
+  m_Name: Live2DModels.expressionList
+  m_EditorClassIdentifier: 
+  CubismExpressionObjects:
+  - {fileID: 11400000, guid: eb54a19c84ac4cf4995441e713389a8f, type: 2}
+  - {fileID: 11400000, guid: 78db2e6677ccbf041812a4541b9078a1, type: 2}
+  - {fileID: 11400000, guid: 92845a26c70641b41ad932a44ce7860b, type: 2}
+  - {fileID: 11400000, guid: 337aaf2f1adfc024cb1199e735ce06f4, type: 2}
+  - {fileID: 11400000, guid: ea7528e2c6e9cae4fb17e19875bc8718, type: 2}
+  - {fileID: 11400000, guid: fb5d7bd9b32c12449a5e8f21681b9595, type: 2}
+  - {fileID: 11400000, guid: 7cfe75e693b525a4b9379a2b95bdd22c, type: 2}
+  - {fileID: 11400000, guid: 405558a4c64b8a9418f06b268a32a347, type: 2}
+  - {fileID: 11400000, guid: f4193ffc6d5d96b468d4829ba5017956, type: 2}
+  - {fileID: 11400000, guid: 8663140efe970d5428f896478cdbaf8c, type: 2}
