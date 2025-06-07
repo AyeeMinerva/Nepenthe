@@ -8,7 +8,7 @@ import numpy as np
 from global_managers.logger_manager import LoggerManager
 
 # 全局输出设备索引
-AUDIO_OUTPUT_DEVICE_INDEX = 10
+AUDIO_OUTPUT_DEVICE_INDEX = None
 
 class AudioPlayer:
     _instance = None
@@ -20,17 +20,65 @@ class AudioPlayer:
                 cls._instance = super().__new__(cls)
             return cls._instance
 
-    def __init__(self, output_device_index=AUDIO_OUTPUT_DEVICE_INDEX):
-        if not hasattr(self, 'initialized'):
-            self.audio_queue = queue.Queue()
-            self.play_thread = None
-            self.stop_flag = False
-            self.first_chunk = True
-            self.pyaudio = pyaudio.PyAudio()
-            self.stream = None
-            self.output_device_index = output_device_index
-            self.initialized = True
-            #LoggerManager().get_logger().debug("AudioPlayer 初始化完成")
+    def __init__(self, output_device_index=None):
+            if not hasattr(self, 'initialized'):
+                self.audio_queue = queue.Queue()
+                self.play_thread = None
+                self.stop_flag = False
+                self.first_chunk = True
+                self.pyaudio = pyaudio.PyAudio()
+                self.stream = None
+                
+                # 如果没有指定设备，自动查找CABLE INPUT
+                if output_device_index is None:
+                    output_device_index = self._find_cable_input_device()
+                
+                self.output_device_index = output_device_index
+                self.initialized = True
+                
+                if self.output_device_index is not None:
+                    LoggerManager().get_logger().info(f"AudioPlayer 使用设备索引: {self.output_device_index}")
+                else:
+                    LoggerManager().get_logger().warning("AudioPlayer 将使用系统默认设备")
+
+    def _find_cable_input_device(self):
+        """查找CABLE INPUT设备（优先MME API）"""
+        cable_devices = []
+        
+        try:
+            for i in range(self.pyaudio.get_device_count()):
+                info = self.pyaudio.get_device_info_by_index(i)
+                if info['maxOutputChannels'] > 0:
+                    host_api = self.pyaudio.get_host_api_info_by_index(info['hostApi'])['name']
+                    device_name = info['name'].upper()
+                    
+                    # 查找CABLE INPUT设备
+                    if 'CABLE INPUT' in device_name or 'CABLE IN' in device_name:
+                        cable_devices.append({
+                            'index': i,
+                            'name': info['name'],
+                            'api': host_api,
+                            'channels': info['maxOutputChannels']
+                        })
+            
+            # 优先选择MME API的CABLE INPUT
+            for device in cable_devices:
+                if 'MME' in device['api']:
+                    LoggerManager().get_logger().info(f"找到CABLE INPUT设备: {device['name']} (索引: {device['index']}, API: {device['api']})")
+                    return device['index']
+            
+            # 如果没有MME，选择第一个找到的CABLE INPUT
+            if cable_devices:
+                device = cable_devices[0]
+                LoggerManager().get_logger().info(f"使用CABLE INPUT设备: {device['name']} (索引: {device['index']}, API: {device['api']})")
+                return device['index']
+            
+            LoggerManager().get_logger().warning("未找到CABLE INPUT设备")
+            return None
+            
+        except Exception as e:
+            LoggerManager().get_logger().error(f"查找CABLE INPUT设备时出错: {e}")
+            return None
 
     def start(self):
         """启动播放线程"""
