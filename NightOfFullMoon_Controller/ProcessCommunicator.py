@@ -1,9 +1,7 @@
 import socket
 import threading
 import json
-import logging
-
-logger = logging.getLogger(__name__)
+import struct
 
 class ProcessCommunicator:
     _instance = None
@@ -95,19 +93,58 @@ class ProcessCommunicator:
         self.conn = None
         self.sock = None
 
+    def _receive_exact_bytes(self, conn, n):
+        """接收确切的n个字节"""
+        data = b""
+        while len(data) < n:
+            chunk = conn.recv(n - len(data))
+            if not chunk:
+                return None
+            data += chunk
+        return data
+
+    def _receive_message_with_length(self, conn):
+        """接收带长度前缀的消息"""
+        try:
+            # 先接收4字节的长度信息
+            length_data = self._receive_exact_bytes(conn, 4)
+            if not length_data:
+                return None
+            
+            # 解析消息长度
+            message_length = struct.unpack('!I', length_data)[0]
+            
+            # 防止恶意的超大消息
+            if message_length > 10 * 1024 * 1024:  # 10MB限制
+                raise Exception(f"消息过大: {message_length} 字节")
+            
+            # 接收完整消息
+            message_data = self._receive_exact_bytes(conn, message_length)
+            if not message_data:
+                return None
+            
+            return message_data.decode('utf-8')
+        except Exception as e:
+            raise e
+
     def send(self, msg: str, topic: str):
         if not self._active:
             self.status = "未连接，无法发送"
             return
         try:
             data = {"msg": msg, "topic": topic}
+            message = json.dumps(data).encode('utf-8')
+            # 添加4字节的长度前缀
+            length_prefix = struct.pack('!I', len(message))
+            full_message = length_prefix + message
+            
             if self.is_server:
                 with self.lock:
                     for conn in self.clients.values():
-                        conn.sendall(json.dumps(data).encode('utf-8'))
+                        conn.sendall(full_message)
             else:
                 if self.conn:
-                    self.conn.sendall(json.dumps(data).encode('utf-8'))
+                    self.conn.sendall(full_message)
         except Exception as e:
             self.status = f"发送失败: {e}"
 
@@ -116,7 +153,7 @@ class ProcessCommunicator:
         self.topic_handlers[prefix] = handler
 
     def _dispatch_message(self, msg, topic):
-        # 匹配所有“此主题本身”及“此主题的子主题”的handler，全部调用
+        # 匹配所有"此主题本身"及"此主题的子主题"的handler，全部调用
         for prefix, handler in self.topic_handlers.items():
             if prefix == "" or topic == prefix or topic.startswith(prefix + "."):
                 handler(msg, topic)
@@ -124,21 +161,29 @@ class ProcessCommunicator:
     def _receive_server(self, conn, client_id):
         while self._active:
             try:
-                data = conn.recv(102400)
-                if not data:
+                message_str = self._receive_message_with_length(conn)
+                if not message_str:
                     self.status = f"客户端断开"
                     break
-                msg = json.loads(data.decode('utf-8'))
+                
+                msg = json.loads(message_str)
                 topic = msg.get("topic", "")
-                logging.info(f"\n收到消息: {msg}")
+                print(f"\n收到消息: {msg}")
+                
+                # 重新构建完整消息进行广播
+                message_bytes = message_str.encode('utf-8')
+                length_prefix = struct.pack('!I', len(message_bytes))
+                full_message = length_prefix + message_bytes
+                
                 # 广播给所有其他客户端
                 with self.lock:
                     for cid, cconn in self.clients.items():
                         if cid != client_id:
                             try:
-                                cconn.sendall(json.dumps(msg).encode('utf-8'))
+                                cconn.sendall(full_message)
                             except Exception:
                                 pass  # 忽略单个客户端异常
+                
                 # 本地分发（服务器本地handler）
                 self._dispatch_message(msg, topic)
             except Exception as e:
@@ -148,14 +193,15 @@ class ProcessCommunicator:
     def _receive_client(self, conn):
         while self._active:
             try:
-                data = conn.recv(1024)
-                if not data:
+                message_str = self._receive_message_with_length(conn)
+                if not message_str:
                     self.status = "服务器断开"
                     self.active = False
                     break
-                msg = json.loads(data.decode('utf-8'))
+                
+                msg = json.loads(message_str)
                 topic = msg.get("topic", "")
-                logging.info(f"\n收到消息: {msg}")
+                print(f"\n收到消息: {msg}")
                 self._dispatch_message(msg, topic)
             except Exception as e:
                 self.status = f"接收异常: {e}"
@@ -167,7 +213,7 @@ if __name__ == "__main__":
     is_server = mode == 's'
     app = ProcessCommunicator.instance(is_server)
     app.active = True
-    logging.info("输入内容发送消息，输入/exit退出")
+    print("输入内容发送消息，输入/exit退出")
     while app.active:
         msg = input("输入消息内容: ")
         if msg == "/exit":
@@ -175,7 +221,7 @@ if __name__ == "__main__":
             break
         topic = input("输入topic标志: ")
         app.send(msg, topic)
-    logging.info("程序已退出")
+    print("程序已退出")
 
 """
 外部调用方法说明：
