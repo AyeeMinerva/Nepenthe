@@ -1,4 +1,6 @@
 IGNORE/**
+NightOfFullMoon_Controller/images/**
+NightOfFullMoon_Controller/logs/**
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
